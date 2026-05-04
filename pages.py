@@ -11,6 +11,12 @@ class UrbanRoutesPage:
         from_field = (By.ID, 'from')
         to_field = (By.ID, 'to')
 
+        # Fluxo de chamada de taxi
+        TAXI_OPTION = (By.XPATH, '//button[contains(., "Chamar")]')
+        COMFORT_CARD = (By.XPATH, '//div[contains(@class,"tcard") and .//div[text()="Comfort"]]')
+        COMFORT_ACTIVE = (By.XPATH, '//*[@id="root"]//div[contains(@class(),"active")]')
+
+
         def __init__(self, driver):
             self.driver = driver
             self.wait = WebDriverWait(driver, 10)
@@ -50,3 +56,21 @@ class UrbanRoutesPage:
 
         def get_to_location(self):
             return self._get_value(self.to_field)
+
+        # Chamar taxi
+
+        def click_taxi_opition(self):
+            self._click(self.TAXI_OPTION)
+
+        def click_icon_comfort_selected(self):
+            self.driver.find_element(*self.COMFORT_CARD).click()
+
+        def is_comfort_card_active(self):
+            try:
+                element = self._find(self.COMFORT_CARD)
+                classes = element.get_attribute("class")
+                print("CLASSES:", classes)
+                return "active" in classes
+            except Exception as e:
+                print("Erro ao verificar estado:", e)
+                return False

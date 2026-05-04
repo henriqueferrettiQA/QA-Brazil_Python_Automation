@@ -31,7 +31,7 @@ class TestUrbanRoutes:
         self.page.enter_locations(data.ADDRESS_FROM, data.ADDRESS_TO)
         assert self.page.get_from_location() == data.ADDRESS_FROM
         assert self.page.get_to_location() == data.ADDRESS_TO
-        
+
 
     def test_order_2_ice_creams(self):
         numbers_of_ice_creams = 2
@@ -40,10 +40,14 @@ class TestUrbanRoutes:
             print("função criada para adicionar a quantidade de sorvetes")
             pass
 
+    import data
+
     def test_select_plan(self):
-        # Adicionar em S8
-        print("função criada para definir a rota")
-        pass
+        self.page.enter_locations(data.ADDRESS_FROM, data.ADDRESS_TO)
+        self.page.click_taxi_opition()
+        self.page.click_icon_comfort_selected()
+        assert self.page.is_comfort_card_active()
+        time.sleep(2)
 
     def test_fill_phone_number(self):
         # Adicionar em S8
