@@ -11,16 +11,18 @@ from selenium.webdriver.support import expected_conditions as EC
 class TestUrbanRoutes:
     @classmethod
     def setup_class(cls):
-        from selenium.webdriver import DesiredCapabilities
-        capabilities = DesiredCapabilities.CHROME
-        capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
-        cls.driver = Chrome()
+        from selenium.webdriver.chrome.options import Options
+
+        options = Options()
+        options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
+
+        cls.driver = Chrome(options=options)
         cls.driver.implicitly_wait(5)
 
         if helpers.is_url_reachable(data.URBAN_ROUTES_URL):
             print('Conectado ao servidor Urban Routes')
         else:
-            print('Não foi possível conectar ao Urban Routes. Verifique se o servidor está ligado e ainda em execução')
+            print('Não foi possível conectar ao Urban Routes.')
 
     def setup_method(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -34,11 +36,19 @@ class TestUrbanRoutes:
 
 
     def test_order_2_ice_creams(self):
-        numbers_of_ice_creams = 2
-        for count in range(numbers_of_ice_creams):
-            # Adicionar em S8
-            print("função criada para adicionar a quantidade de sorvetes")
-            pass
+        self.page.enter_locations(
+            data.ADDRESS_FROM,
+            data.ADDRESS_TO
+        )
+
+        self.page.click_taxi_opition()
+
+        self.page.click_icon_comfort_selected()
+
+        value = self.page.order_2_ice_creams()
+
+        assert value == "2"
+
 
     import data
 
@@ -47,32 +57,80 @@ class TestUrbanRoutes:
         self.page.click_taxi_opition()
         self.page.click_icon_comfort_selected()
         assert self.page.is_comfort_card_active()
-        time.sleep(2)
+
 
     def test_fill_phone_number(self):
-        # Adicionar em S8
-        print("função criada para definir a rota")
-        pass
+        self.page.enter_locations(data.ADDRESS_FROM, data.ADDRESS_TO)
+        self.page.click_taxi_opition()
+        self.page.click_icon_comfort_selected()
+
+        code = self.page.fill_phone_number(data.PHONE_NUMBER)
+
+        assert code is not None
+
+
+
 
     def test_fill_card(self):
-        # Adicionar em S8
-        print("função criada para definir a rota")
-        pass
+        self.page.enter_locations(data.ADDRESS_FROM, data.ADDRESS_TO)
+
+        self.page.click_taxi_opition()
+
+        # IMPORTANTE: selecionar plano primeiro
+        self.page.click_icon_comfort_selected()
+
+        result = self.page.fill_card(data.CARD_NUMBER, data.CARD_CODE)
+
+        assert result is True
+
 
     def test_comment_for_driver(self):
-        # Adicionar em S8
-        print("função criada para definir a rota")
-        pass
+        self.page.enter_locations(data.ADDRESS_FROM, data.ADDRESS_TO)
+
+        self.page.click_taxi_opition()
+
+        self.page.click_icon_comfort_selected()
+
+        value = self.page.fill_comment_for_driver(
+            data.MESSAGE_FOR_DRIVER
+        )
+
+        assert value == data.MESSAGE_FOR_DRIVER
+
+
+
 
     def test_order_blanket_and_handkerchiefs(self):
-        # Adicionar em S8
-        print("função criada para definir a rota")
-        pass
+        self.page.enter_locations(data.ADDRESS_FROM, data.ADDRESS_TO)
+
+        self.page.click_taxi_opition()
+
+        self.page.click_icon_comfort_selected()
+
+        result = self.page.order_blanket_and_handkerchiefs()
+
+
+        assert result is True
+
+
+
 
     def test_car_search_model_appears(self):
-        # Adicionar em S8
-        print("função criada para definir a rota")
-        pass
+        self.page.enter_locations(data.ADDRESS_FROM, data.ADDRESS_TO)
+
+        self.page.click_taxi_opition()
+
+        self.page.click_icon_comfort_selected()
+
+        self.page.fill_phone_number(data.PHONE_NUMBER)
+
+        self.page.fill_card(data.CARD_NUMBER, data.CARD_CODE)
+
+        self.page.fill_comment_for_driver(data.MESSAGE_FOR_DRIVER)
+
+        result = self.page.order_taxi_and_wait_search_modal()
+
+        assert result is not None
 
     @classmethod
     def teardown_class(cls):
